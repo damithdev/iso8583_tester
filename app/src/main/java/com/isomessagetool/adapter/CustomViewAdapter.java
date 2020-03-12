@@ -2,6 +2,7 @@ package com.isomessagetool.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +14,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.isomessagetool.R;
 import com.isomessagetool.pojo.ViewItem;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class CustomViewAdapter extends RecyclerView.Adapter<CustomViewAdapter.CustomViewHolder>{
 
@@ -49,14 +52,14 @@ public class CustomViewAdapter extends RecyclerView.Adapter<CustomViewAdapter.Cu
         final ViewItem item = viewItemsList.get(position);
 
         //set the data to the view here
-        holder.setTxtTitle(item.getName());
-        holder.setTxtValue(item.getValue());
+
+        holder.setItem(item);
         // You can set click listners to indvidual items in the viewholder here
         // make sure you pass down the listner or make the Data members of the viewHolder public
         holder.getButtonDelete().setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                String itemLabel = viewItemsList.get(position).getName();
+                String itemLabel = String.valueOf( viewItemsList.get(position).getBit());
                 viewItemsList.remove(position);
                 notifyItemRemoved(position);
                 notifyItemRangeChanged(position,viewItemsList.size());
@@ -98,9 +101,10 @@ public class CustomViewAdapter extends RecyclerView.Adapter<CustomViewAdapter.Cu
 
 
         if(item != null){
+            builder.setTitle("Update ISO Record");
             EditText editBit = customLayout.findViewById(R.id.editBit);
             EditText editValue = customLayout.findViewById(R.id.editValue);
-            editBit.setText(item.getName());
+            editBit.setText(String.valueOf(item.getBit()));
             editValue.setText(item.getValue());
             TextView indexView = customLayout.findViewById(R.id.record_index);
             indexView.setText(String.valueOf(position));
@@ -122,10 +126,10 @@ public class CustomViewAdapter extends RecyclerView.Adapter<CustomViewAdapter.Cu
                 try {
 
                     if(pos.isEmpty()){
-                        sendDialogDataToActivity(new ViewItem(editBit.getText().toString(),editValue.getText().toString()),-1);
+                        sendDialogDataToActivity(new ViewItem(Integer.parseInt(editBit.getText().toString()),editValue.getText().toString()),-1);
                     }else{
                         int posidx = Integer.parseInt(pos);
-                        sendDialogDataToActivity(new ViewItem(editBit.getText().toString(),editValue.getText().toString()),posidx);
+                        sendDialogDataToActivity(new ViewItem(Integer.parseInt(editBit.getText().toString()),editValue.getText().toString()),posidx);
                     }
                 }catch (Exception e){
                     Toast.makeText(mContext,e.getMessage(),Toast.LENGTH_LONG);
@@ -145,16 +149,18 @@ public class CustomViewAdapter extends RecyclerView.Adapter<CustomViewAdapter.Cu
 
     // do something with the data coming from the AlertDialog
     private void sendDialogDataToActivity(ViewItem data,int position) {
-        if(!data.getName().isEmpty() && !data.getValue().isEmpty()){
-            Toast.makeText(mContext, "New Record Added", Toast.LENGTH_SHORT).show();
+        if(data.getBit() > 0 && !data.getValue().isEmpty()){
 
             if(position >= 0){
                 viewItemsList.set(position,data);
+                Toast.makeText(mContext, "Record Updated", Toast.LENGTH_SHORT).show();
+
             }else{
                 viewItemsList.add(data);
+                Toast.makeText(mContext, "New Record Added", Toast.LENGTH_SHORT).show();
 
             }
-
+            Collections.sort(viewItemsList);
             this.notifyDataSetChanged();
         }
     }
@@ -163,17 +169,25 @@ public class CustomViewAdapter extends RecyclerView.Adapter<CustomViewAdapter.Cu
 
         private TextView txtTitle;
         private TextView txtValue;
+        private TextView txtField;
         private Button btnDelete;
         private LinearLayout layout;
+        private CardView card;
 
         public CustomViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            txtField = itemView.findViewById(R.id.txt_field);
             txtTitle = itemView.findViewById(R.id.txt_title);
             txtValue = itemView.findViewById(R.id.txt_value);
             btnDelete = itemView.findViewById(R.id.delete_btn);
             layout = itemView.findViewById(R.id.view_item_main);
+            card = itemView.findViewById(R.id.card_view);
 
+        }
+
+        public void setTxtField(String field){
+            txtField.setText(field);
         }
 
         public void setTxtTitle(String name) {
@@ -184,12 +198,32 @@ public class CustomViewAdapter extends RecyclerView.Adapter<CustomViewAdapter.Cu
             txtValue.setText(number);
         }
 
+        public void setFieldError(boolean hasError){
+            if(hasError){
+                card.setCardBackgroundColor(Color.YELLOW);
+            }else{
+                card.setCardBackgroundColor(Color.LTGRAY);
+            }
+        }
+
         public Button getButtonDelete(){
             return btnDelete;
         }
 
         public LinearLayout getLayout(){
             return layout;
+        }
+
+        public void setItem(ViewItem item) {
+            setTxtTitle(String.valueOf(item.getBit()));
+            setTxtValue(item.getValue());
+            setTxtField(item.getField().toString());
+
+            if(item.getValue().length() > item.getField().getLength()){
+                setFieldError(true);
+            }else{
+                setFieldError(false);
+            }
         }
     }
 }

@@ -1,35 +1,51 @@
 package com.isomessagetool.pojo;
 
 import androidx.annotation.NonNull;
+import com.imohsenb.ISO8583.enums.FIELDS;
 
-public class ViewItem {
-    private String name;
+import java.io.Serializable;
+
+public class ViewItem implements Comparable, Serializable {
+    private int bit;
     private String value;
+    private String stringField;
+    private FIELDS field;
 
-    public ViewItem(String name, String value) {
-        this.name = name;
+    public ViewItem(int bit, String value) {
+        this.bit = bit;
         this.value = value;
+        this.field = FIELDS.valueOf(bit);
     }
 
-    public String getName() {
-        return name;
+    public int getBit() {
+        return bit;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getValue() {
         return value;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public FIELDS getField(){
+        return field;
     }
+
+    public void setStringField(String field){
+        this.stringField = field;
+    }
+
+    public String getStringField(){return stringField;}
 
     @NonNull
     @Override
     public String toString() {
-        return "Bit: "+name+ " Value:"+value;
+        return "Bit: "+String.valueOf(bit)+ " Value:"+value;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        int compareage=((ViewItem)o).getBit();
+        /* For Ascending order*/
+        return this.bit-compareage;
     }
 }

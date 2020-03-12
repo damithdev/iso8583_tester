@@ -17,4 +17,11 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="title_item_list">Items</string>
+    <string name="title_item_detail">Item Detail</string>
+    <string name="host_key">HOST</string>
+    <string name="port_key">PORT</string>
+    <string name="load">Load</string>
+    <string name="save">Save</string>
+    <string name="send">Send</string>
 </resources>

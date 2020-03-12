@@ -19,8 +19,13 @@
     <PreferenceCategory app:title="@string/messages_header">
 
         <EditTextPreference
-            app:key="signature"
-            app:title="@string/signature_title"
+            app:key="NAC_HOST"
+            app:title="@string/host_key"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:key="NAC_PORT"
+            app:title="@string/port_key"
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
